@@ -2,6 +2,7 @@
   <div>
     <Titulo title="Tarefas" />
    
+    <small v-if="isError" class="form-text  text-danger">  <b-icon icon="cloud-slash-fill" variant scale></b-icon> Erro inesperado com o servidor, tente mais tarde!</small>
 
     <div class="form-group col-4">
       <label for="nomeTask">Nome</label>
@@ -58,6 +59,7 @@ export default {
   data() {
     return {
       nome: '',
+      isError: false,
       alunos: [],
       tasks: [],
       task: {
@@ -121,7 +123,7 @@ export default {
           .then(res => res.json())
           .then(tasks => this.tasks = tasks)
       } catch (error) {
-        //alert('Sem conexão com o servidor')
+        this.isError= true
       }
 
     },
@@ -138,21 +140,27 @@ export default {
         console.log(this.task)
     },
     async CreateTask() {
-      if (this.task.name.trim() == '') {
-        alert('Nome obrigatório')
-        return
+
+      try {
+        
+        if (this.task.name.trim() == '') {
+          alert('Nome obrigatório')
+          return
+        }
+        await this.$http
+          .post(this.baseUrl, this.task)
+          .then(res => res.json())
+          .then(obj => this.response = obj)
+  
+        console.log(this.response.id)
+  
+  
+        this.task.name = ''
+        this.task.description = ''
+        this.getTask()
+      } catch (error) {
+        this.isError= true
       }
-      await this.$http
-        .post(this.baseUrl, this.task)
-        .then(res => res.json())
-        .then(obj => this.response = obj)
-
-      console.log(this.response.id)
-
-
-      this.task.name = ''
-      this.task.description = ''
-      this.getTask()
 
     },
     async deleteTask(t) {
