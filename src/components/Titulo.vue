@@ -15,7 +15,8 @@
 
 <script>
 export default {
-    name: 'TituloPrincipal',
+    title:'Pagina Tarefas',
+    name: 'PaginaTarefas',
     props: {
         title: String
     }
